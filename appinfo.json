@@ -1,0 +1,10 @@
+{
+    "id": "com.iptvos.app",
+    "version": "1.0.0",
+    "vendor": "IPTV",
+    "type": "web",
+    "main": "index.html",
+    "title": "IPTVOS",
+    "icon": "icon.png",
+    "uiRevision": 2
+}

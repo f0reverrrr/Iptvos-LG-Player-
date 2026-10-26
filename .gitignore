@@ -1,0 +1,12 @@
+# Arquivos de backup e temporários
+*.bak
+*.tmp
+*.log
+
+# Arquivos do sistema operacional
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Builds e pacotes webOS (opcional desmarcar se quiser versionar o .ipk)
+# *.ipk

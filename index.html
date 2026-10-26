@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, initial-scale=1.0" />
+  <title>IPTVOS v4</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="$webOS_PATH/webOSTV.js" onerror="console.warn('webOS SDK ausente.')"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body style="width:1920px;height:1080px;">
+
+  <!-- TELA: LOGIN XTREAM -->
+  <div id="screen-setup" class="screen">
+    <div class="login-bg">
+      <div class="login-bg-glow login-bg-glow--left"></div>
+      <div class="login-bg-glow login-bg-glow--right"></div>
+      <div class="login-bg-grid"></div>
+    </div>
+    <div class="login-split">
+      <div class="login-brand">
+        <div class="brand-inner">
+          <div class="brand-logo">
+            <img class="brand-icon" src="icon.png" alt="IPTVOS"/>
+            <span class="brand-name">IPTV<span class="brand-accent">OS</span></span>
+          </div>
+          <p class="brand-tagline">Sua TV. Seu controle.</p>
+          <div class="brand-features">
+            <div class="feature-item"><span class="feature-dot"></span><span>Canais ao vivo em HD e FHD</span></div>
+            <div class="feature-item"><span class="feature-dot"></span><span>Filmes e Séries on demand</span></div>
+            <div class="feature-item"><span class="feature-dot"></span><span>Suporte a Xtream Codes</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="login-form-wrap">
+        <div class="login-card">
+          <div class="login-card-header">
+            <h2 class="login-title">Entrar</h2>
+            <p class="login-subtitle">Insira suas credenciais Xtream Codes</p>
+          </div>
+          <div class="login-fields">
+            <div class="field-group">
+              <label class="field-label">Servidor</label>
+              <div class="field-wrap">
+                <span class="field-icon">&#127760;</span>
+                <input id="xt-host" type="text" class="field-input focusable" placeholder="http://servidor.com:porta" spellcheck="false" autocomplete="off"/>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Usuário</label>
+              <div class="field-wrap">
+                <span class="field-icon">&#128100;</span>
+                <input id="xt-user" type="text" class="field-input focusable" placeholder="seu_usuario" spellcheck="false" autocomplete="off"/>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Senha</label>
+              <div class="field-wrap">
+                <span class="field-icon">&#128274;</span>
+                <input id="xt-pass" type="password" class="field-input focusable" placeholder="sua_senha" autocomplete="off"/>
+              </div>
+            </div>
+          </div>
+          <button id="btn-login" class="btn-login focusable">
+            <span id="btn-login-text">Entrar</span>
+            <span id="btn-login-spinner" class="spinner hidden"></span>
+          </button>
+          <div id="setup-status" class="setup-status hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA: HOME -->
+  <div id="screen-home" class="screen hidden">
+    <div class="login-bg">
+      <div class="login-bg-glow login-bg-glow--left"></div>
+      <div class="login-bg-glow login-bg-glow--right"></div>
+      <div class="login-bg-grid"></div>
+    </div>
+    <div class="home-wrap">
+      <div class="home-header">
+        <div class="home-logo">IPTV<span class="brand-accent">OS</span></div>
+        <div id="home-clock" class="clock"></div>
+      </div>
+      <p class="home-greeting">Bem-vindo! O que deseja assistir?</p>
+      <div class="home-cards">
+        <div class="home-card focusable" data-type="live" data-index="0">
+          <div class="home-card-icon">📡</div>
+          <div class="home-card-title">Canais ao Vivo</div>
+          <div class="home-card-sub">Live TV · HD · FHD</div>
+          <div class="home-card-glow"></div>
+        </div>
+        <div class="home-card focusable" data-type="movies" data-index="1">
+          <div class="home-card-icon">🎬</div>
+          <div class="home-card-title">Filmes</div>
+          <div class="home-card-sub">VOD · On Demand</div>
+          <div class="home-card-glow"></div>
+        </div>
+        <div class="home-card focusable" data-type="series" data-index="2">
+          <div class="home-card-icon">📺</div>
+          <div class="home-card-title">Séries</div>
+          <div class="home-card-sub">Temporadas · Episódios</div>
+          <div class="home-card-glow"></div>
+        </div>
+      </div>
+      <div class="home-hint">OK - Selecionar &nbsp;|&nbsp; HOME - Sair do app</div>
+      <div id="continue-section" class="continue-section hidden">
+        <div class="continue-header"><span>Continuar Assistindo</span></div>
+        <div id="continue-list" class="continue-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA: GRID LIVE -->
+  <div id="screen-player" class="screen hidden">
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-logo">IPTVOS</span>
+        <button id="btn-back-live" class="back-btn focusable">&#8592;</button>
+      </div>
+      <div id="category-list" class="category-list"></div>
+    </aside>
+    <main class="main-content">
+      <div class="topbar">
+        <div id="category-title" class="topbar-title">Todos os Canais</div>
+        <div class="topbar-meta">
+          <span id="channel-count" class="meta-count">0 canais</span>
+          <div id="clock" class="clock"></div>
+        </div>
+      </div>
+      <div class="search-bar">
+        <span class="search-icon">&#128269;</span>
+        <input id="search-input" type="text" class="search-input focusable"
+          placeholder="🔍 Buscar canal...  |  ESC: voltar ao grid  |  🟡 Favoritar  |  🔵 Ver favoritos" />
+      </div>
+      <div id="pagination-bar" class="hidden"></div>
+      <div id="channel-grid" class="channel-grid"></div>
+    </main>
+  </div>
+
+  <!-- TELA: GRID VOD (filmes ou séries) -->
+  <div id="screen-vod" class="screen hidden">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-logo" id="vod-sidebar-logo">Filmes</span>
+        <button id="btn-back-vod" class="back-btn focusable">&#8592;</button>
+      </div>
+      <div id="vod-category-list" class="category-list"></div>
+    </aside>
+    <main class="main-content">
+      <div class="topbar">
+        <div id="vod-category-title" class="topbar-title">Todos</div>
+        <div class="topbar-meta">
+          <span id="vod-item-count" class="meta-count">0 itens</span>
+          <div id="vod-clock" class="clock"></div>
+        </div>
+      </div>
+      <div class="search-bar">
+        <span class="search-icon">&#128269;</span>
+        <input id="vod-search-input" type="text" class="search-input focusable"
+          placeholder="🔍 Buscar...  |  ESC: voltar ao grid  |  🟡 Favoritar" />
+      </div>
+      <div id="vod-pagination-bar" class="hidden"></div>
+      <div id="vod-grid" class="channel-grid vod-grid"></div>
+    </main>
+  </div>
+
+  <!-- TELA: DETALHES VOD / SÉRIE -->
+  <div id="screen-detail" class="screen hidden">
+    <div class="detail-bg">
+      <img id="detail-backdrop" class="detail-backdrop" src="" alt=""/>
+      <div class="detail-backdrop-overlay"></div>
+    </div>
+    <div class="detail-content">
+      <div class="detail-poster-wrap">
+        <img id="detail-poster" class="detail-poster" src="" alt="" onerror="this.style.opacity=0"/>
+      </div>
+      <div class="detail-info">
+        <div id="detail-badge" class="detail-badge"></div>
+        <h1 id="detail-title" class="detail-title"></h1>
+        <div class="detail-meta-row">
+          <span id="detail-year"     class="detail-chip"></span>
+          <span id="detail-rating"   class="detail-chip detail-chip--gold"></span>
+          <span id="detail-duration" class="detail-chip"></span>
+          <span id="detail-genre"    class="detail-chip"></span>
+        </div>
+        <p id="detail-plot" class="detail-plot"></p>
+
+        <!-- VOD: botão direto -->
+        <div id="detail-vod-actions" class="detail-actions hidden">
+          <button id="btn-play-vod" class="detail-btn detail-btn--primary focusable">▶&nbsp; Reproduzir</button>
+        </div>
+
+        <!-- Série: temporadas + episódios -->
+        <div id="detail-series-actions" class="detail-actions hidden">
+          <div class="season-row">
+            <span class="season-label">Temporada:</span>
+            <div id="season-selector" class="season-selector"></div>
+          </div>
+          <div id="episode-list" class="episode-list"></div>
+        </div>
+
+        <button id="btn-fav-detail" class="detail-btn detail-btn--secondary focusable" style="margin-top:16px;">☆ Favoritar</button>
+        <button id="btn-add-sub-detail" class="detail-btn detail-btn--secondary focusable">Adicionar legenda</button>
+        <button id="btn-back-detail" class="detail-btn detail-btn--secondary focusable" style="margin-top:16px;">&#8592; Voltar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA: VIDEO -->
+  <div id="screen-video" class="screen hidden">
+    <video id="video-player" class="video-fullscreen" autoplay playsinline crossorigin="anonymous"></video>
+
+    <!-- Overlay LIVE -->
+    <div id="video-overlay" class="video-overlay hidden">
+      <div class="overlay-top">
+        <button id="btn-exit-player" class="overlay-btn focusable">&#8592; Voltar</button>
+        <div class="now-playing">
+          <span id="np-logo-wrap"><img id="np-logo" src="" alt="" onerror="this.style.display='none'"/></span>
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div id="np-name" class="np-name"></div>
+              <span id="np-fav-indicator">&#9734;</span>
+            </div>
+            <div id="np-category" class="np-category"></div>
+          </div>
+        </div>
+      </div>
+      <div class="overlay-bottom">
+        <div id="playback-status" class="playback-status">A carregar...</div>
+        <div class="overlay-controls-hint">
+          OK — Play/Pause &nbsp;|&nbsp; ←→ — Canal ant./próx. &nbsp;|&nbsp; YELLOW — Favoritar &nbsp;|&nbsp; BACK — Voltar
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay VOD com barra de progresso -->
+    <div id="vod-overlay" class="video-overlay vod-overlay hidden">
+      <div class="overlay-top">
+        <button id="btn-exit-vod-player" class="overlay-btn focusable">&#8592; Voltar</button>
+        <button id="btn-add-sub-vod" class="overlay-btn focusable">Legenda</button>
+        <div class="now-playing">
+          <div>
+            <div id="vod-np-name" class="np-name"></div>
+            <div id="vod-np-sub" class="np-category"></div>
+          </div>
+        </div>
+      </div>
+      <div class="overlay-bottom vod-overlay-bottom">
+        <div class="vod-time-row">
+          <span id="vod-current-time" class="vod-time">0:00:00</span>
+          <span id="vod-total-time"   class="vod-time vod-time--total">0:00:00</span>
+        </div>
+        <div class="vod-progress-track">
+          <div id="vod-progress-bar"    class="vod-progress-bar"></div>
+          <div id="vod-progress-cursor" class="vod-progress-cursor"></div>
+          <div id="vod-seek-preview"    class="vod-seek-preview hidden">
+            <span id="vod-seek-time"></span>
+          </div>
+        </div>
+        <div id="vod-playback-status" class="playback-status" style="margin-top:8px;">A carregar...</div>
+        <button id="btn-next-episode" class="next-episode-btn focusable hidden">Proximo episodio</button>
+        <div class="overlay-controls-hint" style="margin-top:4px;">
+          OK — Play/Pause &nbsp;|&nbsp; ←→ — ±10s &nbsp;|&nbsp; RED/GREEN — ±60s &nbsp;|&nbsp; BACK — Voltar
+        </div>
+      </div>
+    </div>
+
+    <div id="buffering-indicator" class="buffering hidden">
+      <div class="buffering-spinner"></div>
+      <span>Carregando...</span>
+    </div>
+    <div id="video-error" class="video-error hidden">
+      <div class="error-icon">&#9888;</div>
+      <div id="video-error-msg">Erro ao carregar.</div>
+      <button id="btn-retry" class="btn-retry focusable">Tentar novamente</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
