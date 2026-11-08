@@ -1311,6 +1311,9 @@ function tvGoBack(backUrl) {
     }
 }
 
+// Previne comportamento padrão nativo da página exatamente como no Assist Plus
+document.onkeydown = function(e) {};
+
 // Gerenciador hierárquico da tecla Voltar (Arquitetura Assist Plus)
 function handleBackAction() {
     // 1. Se modal de saída estiver aberto, fechar e permanecer no app
@@ -1347,11 +1350,9 @@ function handleBackAction() {
             UI.updateGridFocus(-1);
             return;
         }
-        if (App.focusZone === 'sidebar') {
-            // Estando nas categorias, retorna à Home
-            Actions.backToHome();
-            return;
-        }
+        // Estando nas categorias (ou qualquer outra zona interna), retorna à Home
+        Actions.backToHome();
+        return;
     }
 
     // 4. Se estiver na tela de Filmes / Séries (VOD):
@@ -1370,11 +1371,9 @@ function handleBackAction() {
             UI.updateVodGridFocus(-1);
             return;
         }
-        if (App.vodFocusZone === 'sidebar') {
-            // Estando nas categorias, retorna à Home
-            Actions.backToHome();
-            return;
-        }
+        // Estando nas categorias (ou qualquer outra zona interna), retorna à Home
+        Actions.backToHome();
+        return;
     }
 
     // 5. Se estiver na tela de Detalhes (Filme / Série):
@@ -1415,10 +1414,10 @@ function handleBackAction() {
 // Alias global para navegação de BACK — usado pelos handlers do Nav
 function handleBackKey() { handleBackAction(); }
 
-// 1. Único listener de keydown por página, com capture:true
-document.addEventListener('keydown', function(e) {
+// 1. Único listener global de keydown em window e document, com capture:true
+const _onBackKeyDown = function(e) {
     const k = e.keyCode || e.which;
-    const isBackKey    = k === 461 || k === 27 || e.key === 'Escape' || e.key === 'BrowserBack' || e.key === 'Back';
+    const isBackKey    = k === 461 || k === 27 || k === 10009 || e.key === 'Escape' || e.key === 'BrowserBack' || e.key === 'Back' || e.key === 'GoBack';
     const isBackspace  = k === 8   || e.key === 'Backspace';
 
     if (!isBackKey && !isBackspace) return;
@@ -1448,7 +1447,7 @@ document.addEventListener('keydown', function(e) {
             App.vodFocusZone = 'grid';
             Nav.setVodGridFocus(0);
         }
-        return;
+        return false;
     }
 
     // A partir daqui consumimos o evento e executamos a navegação hierárquica
@@ -1456,7 +1455,11 @@ document.addEventListener('keydown', function(e) {
     e.stopPropagation();
 
     handleBackAction();
-}, { capture: true });
+    return false;
+};
+
+window.addEventListener('keydown', _onBackKeyDown, { capture: true });
+document.addEventListener('keydown', _onBackKeyDown, { capture: true });
 
 const Nav = {
   init(){
@@ -1490,7 +1493,7 @@ const Nav = {
     // BACK (461) e ESC (27) são tratados pelo listener global com capture:true.
     // Aqui mapeamos apenas para que os handlers do Nav possam reconhecê-los,
     // mas o listener global consome o evento antes de chegarem aqui na maioria dos casos.
-    if(e.keyCode===461||e.which===461||e.key==='Back'||e.key==='BrowserBack') return KEYS.BACK;
+    if(e.keyCode===461||e.which===461||e.keyCode===10009||e.key==='Back'||e.key==='BrowserBack'||e.key==='GoBack'||e.key==='Escape') return KEYS.BACK;
     return e.keyCode||e.which||0;
   },
 
